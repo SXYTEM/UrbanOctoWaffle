@@ -1,7 +1,7 @@
 <div align="center">
     <img src="./src/media/logo.png" width="250"/>
     <h1><b>UrbanOctoWaffle</b></h1>
-    <p><b>This is a Discord bot. It replies to messages containg words ending with "ing", with the same word, excpet ending with "ong".</b></p>
+    <p><b>This is a Discord bot. It replies to messages containg words ending in "ing", with the same word, excpet ending in "ong".</b></p>
 </div>
 
 <div align="center">
@@ -26,4 +26,4 @@
    ```shell
    node ./src
    ```
-9.  Go to the server which you invited the bot to, and send a message containing a word ending in "ing". The bot will reply with the same word, except ending with "ong". Voilá!
+9.  Go to the server which you invited the bot to, and send a message containing a word ending in "ing". The bot will reply with the same word, except ending in "ong". Voilá!
