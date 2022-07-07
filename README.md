@@ -15,7 +15,7 @@
 1. If you don't already have a [Discord](https://discord.com/) account, go create one at https://discord.com/. If (or when) you have an account, go to https://discord.com/developers/applications and create a new application. Go to the application's Bot tab and click the Add Bot button. Below, in the Privileged Gateway Intents section, turn on Message Content Intent.
 2. Go to the OAuth2 section of the application, go to the URL Generator subsector. In Scopes, select bot. Then, in the Bot Permissions section, select the Send Messages permission.
 3. Down in the Generated URL section, copy the URL. Open the URL, and you'll be prompted to log into Discord. Then, you'll be prompted to invite the bot. Select the server, and click Authorise.
-4. Go to UrbanOctoWaffle's [GitHub page](https://github.com/SXYTEM/UrbanOctoWaffle), and download the repository. Alternatively, you can clone the repository using [Git](https://git-scm.com/) like so:
+4. Go to UrbanOctoWaffle's [GitHub page](https://github.com/SXYTEM/UrbanOctoWaffle), and download the repository. Alternatively, you can clone the repository using [Git](https://git-scm.com/) (download at https://git-scm.com/) like so:
    ```shell
    git clone https://github.com/SXYTEM/UrbanOctoWaffle
    ```
