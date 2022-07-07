@@ -23,7 +23,7 @@ client.on("messageCreate", (msg) => {
 
     // Replace all longer-than-one spaces with a single space
     while (msg.content.includes("  ")) {
-        msg.content = msg.content.replace("  ", " ");
+        msg.content = msg.content.replaceAll("  ", " ");
     }
 
     var msg_array = msg.content.split(" "); // Array containing all words in the message
