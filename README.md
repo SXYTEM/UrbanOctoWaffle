@@ -14,7 +14,7 @@
    ```
 5. Go to you bot's application page, then to the Bot tab. Then, generate and copy the token under the Token section.
 6. Paste the bot token in the [config.json](config.json) file under the "TOKEN" variable.
-7. Download [Node](https://nodejs.org/) if you don't already have it, at https://nodejs.org/.
+7. Download and install [Node](https://nodejs.org/) if you don't already have it, at https://nodejs.org/.
 8. Open a terminal in the folder you cloned the code into, and execute the command
    ```shell
    node ./src
