@@ -7,33 +7,26 @@ client.on("ready", () => {
 
 client.on("messageCreate", (msg) => {
     if (msg.author.id === client.user.id) return;
-
-    // Create dictionary, `msgs`, of all possible "-ing" messages and their correspondent
-    // replies
-    let alphabet = "abcdefghijklmnopqrstuvwxyzåäö".split("");
-    let msgs = {};
-    alphabet.forEach((word) => {
-        msgs[word + "ing"] = word + "ong";
-    });
-
     var reply = [];
 
-    // Replace all newlines with a space
+    // Replace all newlines in `msg` with a space
     msg.content = msg.content.replaceAll("\n", " ");
 
-    // Replace all longer-than-one spaces with a single space
+    // Replace all longer-than-one spaces in `msg` with a single space
     while (msg.content.includes("  ")) {
         msg.content = msg.content.replaceAll("  ", " ");
     }
 
-    var msg_array = msg.content.split(" "); // Array containing all words in the message
+    var msg_array = msg.content.split(" "); // Array containing all words in `msg`
 
-    // Go through `msg_array`, and for every word, check if it's a key in `msgs`. If it
-    // is, add its correspondent, item, to `reply`.
+    // Go through `msg_array`, and for every word ending in "ing", add the word to `reply`
+    // except ending in "ong"
     msg_array.forEach((word) => {
-        if (word in msgs) {
-            var corr = msgs[word];
-            reply.push(corr);
+        word_beginning = word.slice(0, -3);
+        word_ending = word.slice(-3);
+
+        if (word_ending == "ing") {
+            reply.push(word_beginning + "ong");
         }
     });
 
