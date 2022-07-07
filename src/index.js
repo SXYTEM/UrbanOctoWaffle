@@ -8,7 +8,8 @@ client.on("ready", () => {
 client.on("messageCreate", (msg) => {
     if (msg.author.id === client.user.id) return;
 
-    // Create dictionary, `msgs` of all messages and their correspondent replies
+    // Create dictionary, `msgs`, of all possible "-ing" messages and their correspondent
+    // replies
     let alphabet = "abcdefghijklmnopqrstuvwxyzåäö".split("");
     let msgs = {};
     alphabet.forEach((word) => {
