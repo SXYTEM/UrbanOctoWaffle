@@ -26,4 +26,4 @@
    ```shell
    node ./src
    ```
-9.  Go to the server which you invited the bot to, and type a four-letter word, ending in "ing". The bot will reply with the same word, except ending with "ong". Voilá!
+9.  Go to the server which you invited the bot to, and send a message containing a word ending in "ing". The bot will reply with the same word, except ending with "ong". Voilá!
