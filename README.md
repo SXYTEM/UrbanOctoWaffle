@@ -4,6 +4,13 @@
     <p><b>This is a Discord bot. It replies to messages containg words ending with "ing", with the same word, excpet ending with "ong".</b></p>
 </div>
 
+<div align="center">
+
+![Commit Activity](https://img.shields.io/github/commit-activity/m/SXYTEM/UrbanOctoWaffle?style=for-the-badge)
+![Bugs](https://img.shields.io/github/issues/SXYTEM/UrbanOctoWaffle/bug.svg?style=for-the-badge)
+
+</div>
+
 ## How to get started
 1. If you don't already have a [Discord](https://discord.com/) account, go create one at https://discord.com/. If (or when) you have an account, go to https://discord.com/developers/applications and create a new application. Go to the application's Bot tab and click the Add Bot button. Below, in the Privileged Gateway Intents section, turn on Message Content Intent.
 2. Go to the OAuth2 section of the application, go to the URL Generator subsector. In Scopes, select bot. Then, in the Bot Permissions section, select the Send Messages permission.
