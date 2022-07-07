@@ -27,3 +27,10 @@
    node ./src
    ```
 9.  Go to the server which you invited the bot to, and send a message containing a word ending in "ing". The bot will reply with the same word, except ending in "ong". Voilá!
+
+## Dependencies
+This project uses [Discord.js](https://discord.js.org/#/) and [Node](https://nodejs.org/).
+
+| Package    | Version |
+|------------|---------|
+| Discord.js | 13.8.1  |
