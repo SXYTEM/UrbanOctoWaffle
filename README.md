@@ -22,11 +22,16 @@
 5. Go to your bot's application page, then to the "Bot" tab. Then, generate and copy the token under the "Token" section.
 6. Paste the bot token in the [config.json](config.json) file under the "TOKEN" variable.
 7. Download and install [Node](https://nodejs.org/) if you don't already have it, at https://nodejs.org/.
-8. Open a terminal in the folder you cloned the code into, and execute the command
+8. Then, to install the [dependencies](#dependencies), run the following commands in your project directory:
+   ```shell
+   npm install
+   ```
+   Alternatively, you can run [install_packages.bat](install_packages.bat).
+9. Then, run the following command to start the bot:
    ```shell
    node ./src
    ```
-9.  Go to the server to which you invited the bot, and send a message containing a word ending in "ing". The bot will reply with the same word, except ending in "ong". Voilá!
+10. Go to the server to which you invited the bot, and send a message containing a word ending in "ing". The bot will reply with the same word, except ending in "ong". Voilá!
 
 ## Dependencies
 This project uses [Discord.js](https://discord.js.org/#/) and [Node](https://nodejs.org/).
