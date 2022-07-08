@@ -1,7 +1,7 @@
 <div align="center">
     <img src="./src/media/logo.png" width="250"/>
     <h1><b>UrbanOctoWaffle</b></h1>
-    <p><b>This is a Discord bot. It replies to messages containg words ending in "ing", with the same word, excpet ending in "ong".</b></p>
+    <p><b>This is a Discord bot. It replies to messages containg words ending in "ing", with the same words, excpet ending in "ong".</b></p>
 </div>
 
 <div align="center">
