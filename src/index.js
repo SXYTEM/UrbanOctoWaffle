@@ -14,6 +14,7 @@ client.on("messageCreate", (msg) => {
     ) {
         return;
     }
+
     var sent = true;
     var reply_msg = createReply(msg);
     if (reply_msg != false) {
