@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
-const { DEBUG, SPECIAL_CHARS, TOKEN } = require("../config.json");
+const { TOKEN, SPECIAL_CHARS, DEBUG } = require("../config.json");
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
