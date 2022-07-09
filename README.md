@@ -25,7 +25,7 @@
 7. Go to your bot's application page, then to the "Bot" tab. Then, generate and copy the token under the "Token" section.
 8. Paste the bot token in the [config.json](config.json) file under the "TOKEN" variable.
 9. Download and install [Node](https://nodejs.org/) if you don't already have it, at https://nodejs.org/.
-10. Then, to install the [dependencies](#dependencies), run the following commands in your project directory:
+10. Then, to install the [dependencies](#dependencies), run the following command in your project directory:
    ```shell
    $ npm install
    ```
