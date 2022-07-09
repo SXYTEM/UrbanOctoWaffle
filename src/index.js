@@ -11,9 +11,9 @@ client.on("messageCreate", (msg) => {
     if (
         !msg.content.toLowerCase().includes("ing") ||
         msg.author.id == client.user.id
-    )
+    ) {
         return;
-
+    }
     var sent = true;
     var reply_msg = createReply(msg);
     if (reply_msg != false) {
