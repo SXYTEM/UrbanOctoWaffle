@@ -1,6 +1,9 @@
 const Discord = require("discord.js");
+const fs = require("fs");
 const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 const { TOKEN, SPECIAL_CHARS, DEBUG } = require("../config.json");
+const TIME = get_current_time();
+
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
@@ -32,6 +35,19 @@ client.on("messageCreate", (msg) => {
         }
     }
 });
+
+function get_current_time() {
+    // Get current time, and convert it to a string formatted like so: "YYYYMMDDhhmm"
+    var time = new Date();
+    var YYYY = time.getFullYear();
+    var MM = (time.getMonth() + 1).toString().padStart(2, "0");
+    var DD = time.getDay().toString().padStart(2, "0");
+    var hh = time.getHours();
+    var mm = time.getMinutes();
+    var TIME = `${YYYY}${MM}${DD}${hh}${mm}`;
+
+    return TIME;
+}
 
 function createReply(msg) {
     // Replace all newlines in `msg.content` with a space
@@ -71,32 +87,48 @@ function createReply(msg) {
 }
 
 function log_file(msg, reply_msg, sent) {
-    // This script's and the `logs` folder's paths
+    // The `msg_logs` folder's paths
     var script_path = __filename.substring(0, __filename.lastIndexOf("\\") + 1);
-    var logs_path = script_path + "logs\\log.json";
+    var log_folder = script_path + "msg_logs";
 
-    const fs = require("fs");
+    var log_path = `${log_folder}\\${TIME}.json`;
+
+    // If the `msg_logs` folder doesn't exist, create it
+    if (!fs.existsSync(log_folder)) {
+        fs.mkdirSync(log_folder, { recursive: true });
+    }
+
+    if (!fs.existsSync(log_path)) {
+        fs.open(log_path, "w", (err) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+        });
+    }
+
     try {
-        var logs = require(logs_path);
+        var logs = require(log_path);
     } catch (err) {
-        // The "SyntaxError: Unexpected end of JSON input" error gets thrown when the log
-        // file is empty. If it is, add "{}" to it.
-        if (err instanceof SyntaxError) {
-            fs.writeFileSync(logs_path, "{}", (err) => {
-                if (err) {
-                    console.error(err);
-                    return;
-                }
-            });
+        // The "SyntaxError: Unexpected end of JSON input" error gets thrown when the
+        // log file is empty. If it is, add "{}" to it.
+        fs.writeFileSync(log_path, "{}", (err) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+        });
 
-            var logs = require(logs_path);
-        }
+        var logs = require(log_path);
     }
     if (!sent) logs["sent"] = false;
     logs[msg.id] = msg;
     logs[msg.id]["replyContent"] = reply_msg;
-    fs.writeFile(logs_path, JSON.stringify(logs), (err) => {
-        if (err) console.error(err);
+    fs.writeFileSync(log_path, JSON.stringify(logs), (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
     });
 }
 

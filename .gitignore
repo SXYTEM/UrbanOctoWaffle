@@ -116,5 +116,5 @@ dist
 .pnp.*
 
 # UrbanOctoWaffle
-./src/logs/
+./src/msg_logs/
 ./config.json
