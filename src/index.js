@@ -76,6 +76,9 @@ function create_log_file() {
     return log_path;
 }
 function create_reply(msg) {
+    // Make all capital letters in `msg.content` lower case
+    msg.content = msg.content.toLowerCase();
+
     // Replace all newlines in `msg.content` with a space
     msg.content = msg.content.replaceAll("\n", " ");
 
