@@ -27,10 +27,10 @@ client.on("messageCreate", (msg) => {
             }
         });
 
-        if (DEBUG["CONSOLE"] || DEBUG["FILE"]) {
-            if (DEBUG["CONSOLE"])
+        if (DEBUG["LOGGING"]["CONSOLE"] || DEBUG["LOGGING"]["FILE"]) {
+            if (DEBUG["LOGGING"]["CONSOLE"])
                 console.log(`Replied to ${msg.author.tag}; "${reply_msg}"`);
-            if (DEBUG["FILE"]) log_file(msg, reply_msg, sent);
+            if (DEBUG["LOGGING"]["FILE"]) log_file(msg, reply_msg, sent);
         }
     }
 });

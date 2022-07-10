@@ -43,8 +43,10 @@
         "-",
         "_"
     ],
-    "DEBUG": { 
-        "CONSOLE": true,
-        "FILE": true
+    "DEBUG": {
+        "LOGGING": {
+            "CONSOLE": true,
+            "FILE": true
+        }
     }
 }
