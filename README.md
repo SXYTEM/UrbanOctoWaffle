@@ -29,7 +29,8 @@
    ```shell
    $ npm install
    ```
-   Alternatively, you can run [install_packages.bat](install_packages.bat).
+Alternatively, you can run [install_packages.bat](install_packages.bat).
+
 11. Then, run the following command to start the bot:
    ```shell
    $ node ./src
