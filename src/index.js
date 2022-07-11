@@ -142,7 +142,7 @@ function get_current_time() {
     var time = new Date();
     var YYYY = time.getFullYear();
     var MM = (time.getMonth() + 1).toString().padStart(2, "0");
-    var DD = time.getDay().toString().padStart(2, "0");
+    var DD = time.getDate().toString().padStart(2, "0");
     var hh = time.getHours();
     var mm = time.getMinutes();
     var TIME = `${YYYY}${MM}${DD}${hh}${mm}`;
