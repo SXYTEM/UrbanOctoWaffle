@@ -1,9 +1,23 @@
-const Discord = require("discord.js");
 const fs = require("fs");
-const { TOKEN, SPECIAL_CHARS, DEBUG } = require("../config.json");
-const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
-const LOG_PATH = create_log_file();
+const MSG_FILE = create_log_file("msg_logs", "json");
+const ERR_FILE = create_log_file("err_logs", "txt");
 
+try {
+    var { TOKEN, SPECIAL_CHARS, DEBUG } = require("../config.json");
+} catch (err) {
+    log_err(err);
+    fail();
+}
+
+try {
+    var Discord = require("discord.js");
+} catch (err) {
+    log_err(err);
+    fail();
+}
+const client = new Discord.Client({
+    intents: ["GUILDS", "GUILD_MESSAGES"],
+});
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
@@ -19,7 +33,7 @@ client.on("messageCreate", (msg) => {
     }
     var sent = true;
     var reply_msg = create_reply(msg);
-    if (reply_msg != false) {
+    if (reply_msg) {
         msg.reply(reply_msg, (err) => {
             if (err) {
                 console.error(err);
@@ -27,32 +41,58 @@ client.on("messageCreate", (msg) => {
             }
         });
 
-        if (DEBUG["LOGGING"]["CONSOLE"] || DEBUG["LOGGING"]["FILE"]) {
-            if (DEBUG["LOGGING"]["CONSOLE"])
-                console.log(`Replied to ${msg.author.tag}; "${reply_msg}"`);
-            if (DEBUG["LOGGING"]["FILE"]) log_file(msg, reply_msg, sent);
+        if (DEBUG["LOGGING"]["CONSOLE"]) {
+            var reply_phrase = "Replied to ";
+            var seperator = "; ";
+            // Longest possible Discord username, plus 5 characters for the "#XXXX"
+            var username_max_len = 32 + 5;
+            // The beggining of the console log, i. e. everything before the message
+            //replied to
+            var beginning = `${reply_phrase}${msg.author.tag}${seperator}`;
+            var beginning_max_len =
+                reply_phrase.length + username_max_len + seperator.length;
+            var console_msg =
+                beginning.padEnd(beginning_max_len, " ") + `"${reply_msg}"`;
+            console.log(console_msg);
         }
+        if (DEBUG["LOGGING"]["FILE"]) log_msg_file(msg, reply_msg, sent);
     }
 });
 
-client.login(TOKEN);
+try {
+    client.login(TOKEN);
+} catch (err) {
+    log_err(err);
+    fail();
+}
 
-function create_log_file() {
-    // The `msg_logs` folder's paths
-    var script_path = __filename.substring(0, __filename.lastIndexOf("\\") + 1);
-    var log_folder = script_path + "msg_logs";
+function fail() {
+    process.exit(1);
+}
+
+function create_log_file(log_dir, extension) {
+    // The log folder's path
+    var script_parent_dir = __filename.substring(
+        0,
+        __filename.lastIndexOf("\\") + 1
+    );
+    var log_folder = script_parent_dir + log_dir;
 
     const TIME = get_current_time();
-    var log_path = `${log_folder}\\${TIME}.json`;
+    var log_file = `${log_folder}\\${TIME}.${extension}`;
 
-    // If the `msg_logs` folder doesn't exist, create it
+    // If the log folder doesn't exist, create it
     if (!fs.existsSync(log_folder)) {
         fs.mkdirSync(log_folder, { recursive: true });
     }
 
-    if (!fs.existsSync(log_path)) {
-        fs.open(log_path, "w", (err) => {
-            if (err) console.error(err);
+    // If a log file with the same name doesn't already exist, create it.
+    if (!fs.existsSync(log_file)) {
+        fs.open(log_file, "w", (err) => {
+            if (err) {
+                console.error(err);
+                fail();
+            }
         });
     } else {
         // If a log file already exists for this exact date and time (to the minute),
@@ -61,19 +101,19 @@ function create_log_file() {
         // "YYYYMMDDhhmm_X"
         var duplicate_number = 1;
         while (true) {
-            var path = `${log_folder}\\${TIME}_${duplicate_number}.json`;
+            var path = `${log_folder}\\${TIME}_${duplicate_number}.${extension}`;
             if (!fs.existsSync(path)) {
                 fs.open(path, "w", (err) => {
                     if (err) console.error(err);
                 });
-                log_path = path;
+                log_file = path;
                 break;
             }
             duplicate_number += 1;
         }
     }
 
-    return log_path;
+    return log_file;
 }
 
 function create_reply(msg) {
@@ -117,24 +157,56 @@ function create_reply(msg) {
     }
 }
 
-function log_file(msg, reply_msg, sent) {
-    try {
-        var logs = require(LOG_PATH);
-    } catch (err) {
-        // The "SyntaxError: Unexpected end of JSON input" error gets thrown when the
-        // log file is empty. If it is, add "{}" to it.
-        fs.writeFileSync(LOG_PATH, "{}", (err) => {
-            if (err) console.error(err);
-        });
-
-        var logs = require(LOG_PATH);
-    }
+function log_msg_file(msg, reply_msg, sent) {
+    logs = read_json_file(MSG_FILE);
     if (!sent) logs["sent"] = false;
     logs[msg.id] = msg;
     logs[msg.id]["replyContent"] = reply_msg;
-    fs.writeFileSync(LOG_PATH, JSON.stringify(logs), (err) => {
+    write_json_file(logs, MSG_FILE);
+}
+function log_err(err) {
+    // If `DEBUG` doesn't exist (which it always should -- because it's very fundemental),
+    // create it with all debugging options enabled
+    if (typeof DEBUG == "undefined") {
+        fs.copyFileSync("default_config.json", "../config.json");
+        var { DEBUG } = require("../config.json");
+    }
+
+    if (DEBUG["LOGGING"]["CONSOLE"]) console.error(err);
+    if (DEBUG["LOGGING"]["FILE"]) log_err_file(err);
+}
+function log_err_file(err) {
+    logs = read_json_file(ERR_FILE);
+    var newlines_between_errs = 1;
+    append_file(err.stack + "\n".repeat(newlines_between_errs + 1), ERR_FILE);
+}
+
+function append_file(data, file) {
+    fs.appendFileSync(file, data.toString(), (err) => {
         if (err) console.error(err);
     });
+}
+
+function write_json_file(data, file) {
+    fs.writeFileSync(file, JSON.stringify(data), (err) => {
+        if (err) console.error(err);
+    });
+}
+
+function read_json_file(file) {
+    try {
+        var data = require(file);
+    } catch (err) {
+        // The "SyntaxError: Unexpected end of JSON input" error gets thrown when the
+        // file is empty. If it is, add "{}" to it.
+        fs.writeFileSync(file, "{}", (err) => {
+            if (err) console.error(err);
+        });
+
+        var data = require(file);
+    }
+
+    return data;
 }
 
 function get_current_time() {
@@ -143,8 +215,8 @@ function get_current_time() {
     var YYYY = time.getFullYear();
     var MM = (time.getMonth() + 1).toString().padStart(2, "0");
     var DD = time.getDate().toString().padStart(2, "0");
-    var hh = time.getHours();
-    var mm = time.getMinutes();
+    var hh = time.getHours().toString().padStart(2, "0");
+    var mm = time.getMinutes().toString().padStart(2, "0");
     var TIME = `${YYYY}${MM}${DD}${hh}${mm}`;
 
     return TIME;
