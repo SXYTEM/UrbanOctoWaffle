@@ -23,8 +23,9 @@ client.on("ready", () => {
 });
 
 client.on("messageCreate", (msg) => {
-    // If there are no "ing"'s in `msg.content`, or if the message is sent by the bot,
-    // return
+    /*
+    If there are no "ing"'s in `msg.content`, or if the message is sent by the bot, return
+    */
     if (
         !msg.content.toLowerCase().includes("ing") ||
         msg.author.id == client.user.id
@@ -46,8 +47,10 @@ client.on("messageCreate", (msg) => {
             var seperator = "; ";
             // Longest possible Discord username, plus 5 characters for the "#XXXX"
             var username_max_len = 32 + 5;
-            // The beggining of the console log, i. e. everything before the message
-            //replied to
+            /*
+            The beggining of the console log, i. e. everything before the message
+            replied to
+            */
             var beginning = `${reply_phrase}${msg.author.tag}${seperator}`;
             var beginning_max_len =
                 reply_phrase.length + username_max_len + seperator.length;
@@ -64,10 +67,6 @@ try {
 } catch (err) {
     log_err(err);
     fail();
-}
-
-function fail() {
-    process.exit(1);
 }
 
 function create_log_file(log_dir, extension) {
@@ -95,10 +94,11 @@ function create_log_file(log_dir, extension) {
             }
         });
     } else {
-        // If a log file already exists for this exact date and time (to the minute),
-        // create a new file, except ending in a number. Starting at 1, the number goes up
-        // for every name duplicate. Formatted like so, where X is `duplicate_number`:
-        // "YYYYMMDDhhmm_X"
+        /*
+        If a log file already exists for this exact date and time (to the minute), create
+        a new file, except ending in a number. Starting at 1, the number goes up for every
+        name duplicate. Formatted like so, where X is `duplicate_number`: "YYYYMMDDhhmm_X"
+        */
         var duplicate_number = 1;
         while (true) {
             var path = `${log_folder}\\${TIME}_${duplicate_number}.${extension}`;
@@ -114,6 +114,24 @@ function create_log_file(log_dir, extension) {
     }
 
     return log_file;
+}
+
+function log_err(err) {
+    /*
+    If `DEBUG` doesn't exist (which it always *should* -- because it's as fundemental as
+    it gets), create it with all debugging options enabled
+    */
+    if (typeof DEBUG == "undefined") {
+        fs.copyFileSync("default_config.json", "../config.json");
+        var { DEBUG } = require("../config.json");
+    }
+
+    if (DEBUG["LOGGING"]["CONSOLE"]) console.error(err);
+    if (DEBUG["LOGGING"]["FILE"]) log_err_file(err);
+}
+
+function fail() {
+    process.exit(1);
 }
 
 function create_reply(msg) {
@@ -134,8 +152,10 @@ function create_reply(msg) {
     msg.content = char_array.join("");
     var msg_array = msg.content.split(" "); // Array containing all words in the message
 
-    // Go through `msg_array`, and for every word ending in "ing", add the word to
-    // `reply_msg` except ending in "ong"
+    /*
+    Go through `msg_array`, and for every word ending in "ing", add the word to
+    `reply_msg` except ending in "ong"
+    */
     var reply_msg = [];
     msg_array.forEach((word) => {
         word_beginning = word.slice(0, -3);
@@ -144,12 +164,16 @@ function create_reply(msg) {
         if (word_ending == "ing") reply_msg.push(word_beginning + "ong");
     });
 
-    // If the reply is empty, it means that the message isn't a valid "ing"-ending
-    // message, and therefore no reply should be sent
+    /*
+    If the reply is empty, it means that the message isn't a valid "ing"-ending message,
+    and therefore no reply should be sent
+    */
     if (reply_msg.length === 0) return false;
     else {
-        // Make the `reply_msg` array a string, the words seperated by ", ". Also make the
-        // first letter capital, and add a dot at the end.
+        /*
+        Make the `reply_msg` array a string, the words seperated by ", ". Also make the
+        first letter capital, and add a dot at the end.
+        */
         reply_msg = reply_msg.join(", ");
         reply_msg = reply_msg[0].toUpperCase() + reply_msg.slice(1) + ".";
 
@@ -162,35 +186,21 @@ function log_msg_file(msg, reply_msg, sent) {
     if (!sent) logs["sent"] = false;
     logs[msg.id] = msg;
     logs[msg.id]["replyContent"] = reply_msg;
+    logs = JSON.stringify(logs);
     write_json_file(logs, MSG_FILE);
 }
-function log_err(err) {
-    // If `DEBUG` doesn't exist (which it always should -- because it's very fundemental),
-    // create it with all debugging options enabled
-    if (typeof DEBUG == "undefined") {
-        fs.copyFileSync("default_config.json", "../config.json");
-        var { DEBUG } = require("../config.json");
-    }
 
-    if (DEBUG["LOGGING"]["CONSOLE"]) console.error(err);
-    if (DEBUG["LOGGING"]["FILE"]) log_err_file(err);
-}
-function log_err_file(err) {
-    logs = read_json_file(ERR_FILE);
-    var newlines_between_errs = 1;
-    append_file(err.stack + "\n".repeat(newlines_between_errs + 1), ERR_FILE);
-}
+function get_current_time() {
+    // Get current time, and convert it to a string formatted like so: "YYYYMMDDhhmm"
+    var time = new Date();
+    var YYYY = time.getFullYear();
+    var MM = (time.getMonth() + 1).toString().padStart(2, "0");
+    var DD = time.getDate().toString().padStart(2, "0");
+    var hh = time.getHours().toString().padStart(2, "0");
+    var mm = time.getMinutes().toString().padStart(2, "0");
+    var TIME = `${YYYY}${MM}${DD}${hh}${mm}`;
 
-function append_file(data, file) {
-    fs.appendFileSync(file, data.toString(), (err) => {
-        if (err) console.error(err);
-    });
-}
-
-function write_json_file(data, file) {
-    fs.writeFileSync(file, JSON.stringify(data), (err) => {
-        if (err) console.error(err);
-    });
+    return TIME;
 }
 
 function read_json_file(file) {
@@ -209,15 +219,20 @@ function read_json_file(file) {
     return data;
 }
 
-function get_current_time() {
-    // Get current time, and convert it to a string formatted like so: "YYYYMMDDhhmm"
-    var time = new Date();
-    var YYYY = time.getFullYear();
-    var MM = (time.getMonth() + 1).toString().padStart(2, "0");
-    var DD = time.getDate().toString().padStart(2, "0");
-    var hh = time.getHours().toString().padStart(2, "0");
-    var mm = time.getMinutes().toString().padStart(2, "0");
-    var TIME = `${YYYY}${MM}${DD}${hh}${mm}`;
+function write_json_file(data, file) {
+    fs.writeFileSync(file, data.toString(), (err) => {
+        if (err) console.error(err);
+    });
+}
 
-    return TIME;
+function log_err_file(err) {
+    logs = read_json_file(ERR_FILE);
+    var newlines_between_errs = 1;
+    append_file(err.stack + "\n".repeat(newlines_between_errs + 1), ERR_FILE);
+}
+
+function append_file(data, file) {
+    fs.appendFileSync(file, data.toString(), (err) => {
+        if (err) console.error(err);
+    });
 }
