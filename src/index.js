@@ -79,7 +79,7 @@ function create_log_file(log_dir, extension) {
     var log_folder = script_parent_dir + log_dir;
 
     const TIME = get_current_time();
-    var log_file = `${log_folder}\\${TIME}.${extension}`;
+    var log_file = `${log_folder}\\${TIME}_0.${extension}`;
 
     // If the log folder doesn't exist, create it
     if (!fs.existsSync(log_folder)) {
