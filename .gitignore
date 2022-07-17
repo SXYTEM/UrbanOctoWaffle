@@ -117,4 +117,8 @@ dist
 
 # UrbanOctoWaffle
 src/msg_logs/
+src/err_logs
 config.json
+
+# Prettier
+.prettierrc
