@@ -1,4 +1,6 @@
+const { Resolver } = require("dns");
 const fs = require("fs");
+const { resolve } = require("path");
 const MSG_FILE = create_log_file("msg_logs", "json");
 const ERR_FILE = create_log_file("err_logs", "txt");
 
@@ -21,44 +23,21 @@ const client = new Discord.Client({
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
-
 client.on("messageCreate", (msg) => {
-    /*
-    If there are no "ing"'s in `msg.content`, or if the message is sent by the bot, return
-    */
-    if (
-        !msg.content.toLowerCase().includes("ing") ||
-        msg.author.id == client.user.id
-    ) {
-        return;
-    }
-    var sent = true;
-    var reply_msg = create_reply(msg);
-    if (reply_msg) {
-        msg.reply(reply_msg, (err) => {
-            if (err) {
-                console.error(err);
-                sent = false;
-            }
-        });
-
-        if (DEBUG["LOGGING"]["CONSOLE"]) {
-            var reply_phrase = "Replied to ";
-            var seperator = "; ";
-            // Longest possible Discord username, plus 5 characters for the "#XXXX"
-            var username_max_len = 32 + 5;
-            /*
-            The beggining of the console log, i. e. everything before the message
-            replied to
-            */
-            var beginning = `${reply_phrase}${msg.author.tag}${seperator}`;
-            var beginning_max_len =
-                reply_phrase.length + username_max_len + seperator.length;
-            var console_msg =
-                beginning.padEnd(beginning_max_len, " ") + `"${reply_msg}"`;
-            console.log(console_msg);
+    try {
+        /*
+        If there are no "ing"'s in `msg.content`, or if the message is sent by the bot,
+        return
+        */
+        if (
+            msg.content.toLowerCase().includes("ing") ||
+            msg.author.id !== client.user.id
+        ) {
+            on_message(msg);
         }
-        if (DEBUG["LOGGING"]["FILE"]) log_msg_file(msg, reply_msg, sent);
+    } catch (err) {
+        console.log("FATAL ERROR! CONTINUING ANYWAY...");
+        log_err(err);
     }
 });
 
@@ -71,10 +50,7 @@ try {
 
 function create_log_file(log_dir, extension) {
     // The log folder's path
-    var script_parent_dir = __filename.substring(
-        0,
-        __filename.lastIndexOf("\\") + 1
-    );
+    var script_parent_dir = __filename.substring(0, __filename.lastIndexOf("\\") + 1);
     var log_folder = script_parent_dir + log_dir;
 
     const TIME = get_current_time();
@@ -89,7 +65,7 @@ function create_log_file(log_dir, extension) {
     if (!fs.existsSync(log_file)) {
         fs.open(log_file, "w", (err) => {
             if (err) {
-                console.error(err);
+                log_err(err);
                 fail();
             }
         });
@@ -104,7 +80,7 @@ function create_log_file(log_dir, extension) {
             var path = `${log_folder}\\${TIME}_${duplicate_number}.${extension}`;
             if (!fs.existsSync(path)) {
                 fs.open(path, "w", (err) => {
-                    if (err) console.error(err);
+                    if (err) log_err(err);
                 });
                 log_file = path;
                 break;
@@ -116,22 +92,43 @@ function create_log_file(log_dir, extension) {
     return log_file;
 }
 
-function log_err(err) {
-    /*
-    If `DEBUG` doesn't exist (which it always *should* -- because it's as fundemental as
-    it gets), create it with all debugging options enabled
-    */
-    if (typeof DEBUG == "undefined") {
-        fs.copyFileSync("default_config.json", "../config.json");
-        var { DEBUG } = require("../config.json");
+function log_err(err, overwrite = null) {
+    if (DEBUG["LOGGING"]["ERRORS"]["CONSOLE"]) {
+        if (overwrite) console.log(overwrite);
+        else if (overwrite != "") console.error(err);
     }
-
-    if (DEBUG["LOGGING"]["CONSOLE"]) console.error(err);
-    if (DEBUG["LOGGING"]["FILE"]) log_err_file(err);
+    if (DEBUG["LOGGING"]["ERRORS"]["FILE"]) log_err_file(err);
 }
 
 function fail() {
     process.exit(1);
+}
+
+async function on_message(msg) {
+    var reply_msg = create_reply(msg);
+    if (reply_msg) {
+        var reply_sent = await send_reply(msg, reply_msg);
+        if (DEBUG["LOGGING"]["MESSAGES"]["CONSOLE"] && reply_sent) {
+            log_msg_console(msg, reply_msg);
+        }
+
+        if (DEBUG["LOGGING"]["MESSAGES"]["FILE"]) {
+            log_msg_file(msg, reply_msg, reply_sent);
+        }
+    }
+}
+
+function log_msg_console(msg, reply_msg) {
+    var reply_phrase = "Replied to ";
+    var seperator = "; ";
+    // Longest possible Discord username, plus 5 characters for the "#XXXX" that follows
+    var username_max_len = 32 + 5;
+    // The beggining of the console log, that is everything before the message reply
+    var beginning = `${reply_phrase}${msg.author.tag}${seperator}`;
+    var beginning_max_len = reply_phrase.length + username_max_len + seperator.length;
+    var console_msg = beginning.padEnd(beginning_max_len, " ") + `"${reply_msg}"`;
+
+    console.log(console_msg);
 }
 
 function create_reply(msg) {
@@ -161,7 +158,7 @@ function create_reply(msg) {
         word_beginning = word.slice(0, -3);
         word_ending = word.slice(-3);
 
-        if (word_ending == "ing") reply_msg.push(word_beginning + "ong");
+        if (word_ending === "ing") reply_msg.push(word_beginning + "ong");
     });
 
     /*
@@ -181,10 +178,33 @@ function create_reply(msg) {
     }
 }
 
-function log_msg_file(msg, reply_msg, sent) {
+async function send_reply(msg, reply_msg) {
+    var reply_sent = msg
+        .reply(reply_msg)
+        .then(() => {
+            return true; // Return `true` to indicate that the message was sent
+        })
+        .catch((err) => {
+            log_err(err, "");
+            /*
+            Return `false` to indicate that the message wasn't sent, because an error was
+            raised
+            */
+            return false;
+        });
+
+    var get_result = async () => {
+        var result = await reply_sent;
+        return result;
+    };
+
+    return await get_result();
+}
+
+function log_msg_file(msg, reply_msg, reply_sent) {
     logs = read_json_file(MSG_FILE);
-    if (!sent) logs["sent"] = false;
     logs[msg.id] = msg;
+    logs[msg.id]["replySent"] = reply_sent;
     logs[msg.id]["replyContent"] = reply_msg;
     logs = JSON.stringify(logs);
     write_json_file(logs, MSG_FILE);
@@ -210,7 +230,7 @@ function read_json_file(file) {
         // The "SyntaxError: Unexpected end of JSON input" error gets thrown when the
         // file is empty. If it is, add "{}" to it.
         fs.writeFileSync(file, "{}", (err) => {
-            if (err) console.error(err);
+            if (err) log_err(err);
         });
 
         var data = require(file);
@@ -221,7 +241,7 @@ function read_json_file(file) {
 
 function write_json_file(data, file) {
     fs.writeFileSync(file, data.toString(), (err) => {
-        if (err) console.error(err);
+        if (err) log_err(err);
     });
 }
 
