@@ -41,12 +41,19 @@
         "=",
         "+",
         "-",
-        "_"
+        "_",
+        "¤"
     ],
     "DEBUG": {
         "LOGGING": {
-            "CONSOLE": true,
-            "FILE": true
+            "ERRORS": {
+                "CONSOLE": true,
+                "FILE": true
+            },
+            "MESSAGES": {
+                "CONSOLE": true,
+                "FILE": true
+            }
         }
     }
 }
