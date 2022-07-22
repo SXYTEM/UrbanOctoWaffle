@@ -33,6 +33,7 @@ client.on("messageCreate", (msg) => {
         nothing. Else, call `on_message()` and let the onging (and potentially inging)
         begin...
         */
+        console.log("F: " + validate_msg(msg));
         if (validate_msg(msg)) on_message(msg);
     } catch (err) {
         console.log("FATAL ERROR! CONTINUING ANYWAY...");
@@ -113,9 +114,9 @@ function validate_msg(msg) {
     configuration; `ONGING`, `INGING`), ignore it.
     */
     var REQUIRED_STRS = [];
-    if (ONGING) REQUIRED_STRS.push("ong");
-    if (INGING) REQUIRED_STRS.push("ing");
-    result = false;
+    if (ONGING) REQUIRED_STRS.push("ing");
+    if (INGING) REQUIRED_STRS.push("ong");
+    var result = false;
     REQUIRED_STRS.forEach((str) => {
         if (msg.content.toLowerCase().includes(str)) result = true;
     });
