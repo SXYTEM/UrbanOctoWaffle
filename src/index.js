@@ -2,22 +2,31 @@ const fs = require("fs");
 const MSG_FILE = create_log_file("msg_logs", "json");
 const ERR_FILE = create_log_file("err_logs", "txt");
 
+/*
+    Declare `TOKEN`, `SPECIAL_CHARS`, `DEBUG`, `Discord`, and `GatewayIntentBits` as
+    variables, to make them global. Try/catch blocks and alike contain constants inside of
+    themselves, so they can't be used outside of them. This shouldn't really be a problem,
+    since we wont change their values anyway. It is what it is, I guess.
+    */
 try {
-    const { TOKEN, SPECIAL_CHARS, DEBUG } = require("../config.json");
+    var { TOKEN, SPECIAL_CHARS, DEBUG } = require("../config.json");
 } catch (err) {
     log_err(err);
     fail();
 }
-
 try {
-    const Discord = require("discord.js");
-    const { GatewayIntentBits } = require("discord.js");
+    var Discord = require("discord.js");
+    var { GatewayIntentBits } = require("discord.js");
 } catch (err) {
     log_err(err);
     fail();
 }
 const client = new Discord.Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+    ],
 });
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
@@ -26,12 +35,9 @@ client.on("messageCreate", (msg) => {
     try {
         /*
         If there are no "ing"'s in `msg.content`, or if the message is sent by the bot,
-        return
+        do nothing. Else, call `on_message` and let the onging begin...
         */
-        if (
-            msg.content.toLowerCase().includes("ing") ||
-            msg.author.id !== client.user.id
-        ) {
+        if (msg.content.toLowerCase().includes("ing") || !msg.author.bot) {
             on_message(msg);
         }
     } catch (err) {
