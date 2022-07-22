@@ -151,8 +151,10 @@ function log_msg_console(msg, reply_msg) {
     // The beggining of the console log, that is everything before the message reply
     var beginning = `${msg.author.tag}${seperator}`;
     var beginning_max_len = username_max_len + seperator.length;
-    var console_msg =
-        reply_phrase + beginning.padEnd(beginning_max_len, " ") + `"${reply_msg}"`;
+    var console_msg = `${reply_phrase}${beginning.padEnd(
+        beginning_max_len,
+        " "
+    )}"${reply_msg}"`;
 
     console.log(console_msg);
 }
