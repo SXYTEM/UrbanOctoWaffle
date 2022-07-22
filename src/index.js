@@ -3,6 +3,7 @@ Declare `TOKEN`, `SPECIAL_CHARS`, `DEBUG`, `Discord`, `GatewayIntentBits`, and `
 variables, to make them global. Try/catch blocks and alike contain constants inside of
 themselves, so they can't be used outside of them. This shouldn't really be a problem,
 since we wont change their values anyway. It is what it is, I guess.
+Also, we use a try/catch block to log the errors with `log_err()`.
 */
 try {
     var { TOKEN, SPECIAL_CHARS, DEBUG } = require("../config.json");
