@@ -44,6 +44,8 @@
         "_",
         "¤"
     ],
+    "ONGING": true,
+    "INGING": false,
     "DEBUG": {
         "LOGGING": {
             "ERRORS": {

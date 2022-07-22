@@ -1,5 +1,5 @@
 {
-    "TOKEN": "OTk0OTE2OTA1MTE2Nzc4NTA3.GCtFWU.2OuwbBphV0eSWEnNy0m5HrWyhldziE3FDn-NFA",
+    "TOKEN": "",
     "SPECIAL_CHARS": [
         "0",
         "1",
@@ -44,6 +44,8 @@
         "_",
         "¤"
     ],
+    "ONGING": true,
+    "INGING": false,
     "DEBUG": {
         "LOGGING": {
             "ERRORS": {

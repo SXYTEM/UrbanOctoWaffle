@@ -1,26 +1,28 @@
 /*
-Declare `TOKEN`, `SPECIAL_CHARS`, `DEBUG`, `Discord`, `GatewayIntentBits`, and `fs` as
-variables, to make them global. Try/catch blocks and alike contain constants inside of
-themselves, so they can't be used outside of them. This, however, really shouldn't be a
-problem, since we wont change their values anyway. It is what it is, I guess.
-Also, we use a try/catch block to log the errors with `log_err()`.
+Declare `TOKEN`, `SPECIAL_CHARS`, `ONGING`, `INGING`, `DEBUG`, `Discord`,
+`GatewayIntentBits`, `client`, and `fs` as variables, to make them global. Try/catch
+blocks and alike contain constants inside of themselves, so they can't be used outside of
+them. This, however, really shouldn't be a problem, since their values won't (or rather
+shouldn't) be changed. It is what it is, I guess.
+Also, use a try/catch block to log the errors with `log_err()`.
 */
 try {
-    var { TOKEN, SPECIAL_CHARS, DEBUG } = require("../config.json");
+    var { TOKEN, SPECIAL_CHARS, ONGING, INGING, DEBUG } = require("../config.json");
     var Discord = require("discord.js");
     var { GatewayIntentBits } = require("discord.js");
+    var client = new Discord.Client({
+        intents: [
+            GatewayIntentBits.Guilds,
+            GatewayIntentBits.GuildMessages,
+            GatewayIntentBits.MessageContent,
+        ],
+    });
     var fs = require("fs");
 } catch (err) {
     log_err(err);
     fail();
 }
-const client = new Discord.Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-    ],
-});
+
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
@@ -28,11 +30,10 @@ client.on("messageCreate", (msg) => {
     try {
         /*
         If there are no "ing"'s in `msg.content`, or if the message is sent by the bot, do
-        nothing. Else, call `on_message()` and let the onging begin...
+        nothing. Else, call `on_message()` and let the onging (and potentially inging)
+        begin...
         */
-        if (msg.content.toLowerCase().includes("ing") || !msg.author.bot) {
-            on_message(msg);
-        }
+        if (validate_msg(msg)) on_message(msg);
     } catch (err) {
         console.log("FATAL ERROR! CONTINUING ANYWAY...");
         log_err(err);
@@ -102,6 +103,25 @@ function fail() {
     process.exit(1);
 }
 
+function validate_msg(msg) {
+    // If the message is sent by the bot, ignore it (don't reply to it)
+    if (msg.author.bot) return false;
+    /*
+    In the configuration, the user can choose if messages should be ingd, ongd, both, or none
+    -- the latter making the bot do absolutely nothing. Make `REQUIRED_STRS` contain the
+    configured combination. If the message can't be ingd, ongd, or both (according to the
+    configuration; `ONGING`, `INGING`), ignore it.
+    */
+    var REQUIRED_STRS = [];
+    if (ONGING) REQUIRED_STRS.push("ong");
+    if (INGING) REQUIRED_STRS.push("ing");
+    result = false;
+    REQUIRED_STRS.forEach((str) => {
+        if (msg.content.toLowerCase().includes(str)) result = true;
+    });
+    return result;
+}
+
 async function on_message(msg) {
     var reply_msg = create_reply(msg);
     if (reply_msg) {
@@ -158,8 +178,8 @@ function create_reply(msg) {
     msg_array.forEach((word) => {
         word_beginning = word.slice(0, -3);
         word_ending = word.slice(-3);
-
-        if (word_ending === "ing") reply_msg.push(word_beginning + "ong");
+        if (ONGING && word_ending === "ing") reply_msg.push(word_beginning + "ong");
+        if (INGING && word_ending == "ong") reply_msg.push(word_beginning + "ing");
     });
 
     /*
@@ -173,7 +193,7 @@ function create_reply(msg) {
         first letter capital, and add a dot at the end.
         */
         reply_msg = reply_msg.join(", ");
-        reply_msg = _.capitalize(reply_msg) + ".";
+        reply_msg = reply_msg[0].toUpperCase() + reply_msg.slice(1) + ".";
 
         return reply_msg;
     }
