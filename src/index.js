@@ -35,7 +35,7 @@ client.on("messageCreate", (msg) => {
     try {
         /*
         If there are no "ing"'s in `msg.content`, or if the message is sent by the bot, do
-        nothing. Else, call `on_message` and let the onging begin...
+        nothing. Else, call `on_message()` and let the onging begin...
         */
         if (msg.content.toLowerCase().includes("ing") || !msg.author.bot) {
             on_message(msg);
