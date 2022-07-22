@@ -3,20 +3,21 @@ const MSG_FILE = create_log_file("msg_logs", "json");
 const ERR_FILE = create_log_file("err_logs", "txt");
 
 try {
-    var { TOKEN, SPECIAL_CHARS, DEBUG } = require("../config.json");
+    const { TOKEN, SPECIAL_CHARS, DEBUG } = require("../config.json");
 } catch (err) {
     log_err(err);
     fail();
 }
 
 try {
-    var Discord = require("discord.js");
+    const Discord = require("discord.js");
+    const { GatewayIntentBits } = require("discord.js");
 } catch (err) {
     log_err(err);
     fail();
 }
 const client = new Discord.Client({
-    intents: ["GUILDS", "GUILD_MESSAGES"],
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
