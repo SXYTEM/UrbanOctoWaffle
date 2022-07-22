@@ -1,7 +1,5 @@
-const fs = require("fs");
-
 /*
-Declare `TOKEN`, `SPECIAL_CHARS`, `DEBUG`, `Discord`, and `GatewayIntentBits` as
+Declare `TOKEN`, `SPECIAL_CHARS`, `DEBUG`, `Discord`, `GatewayIntentBits`, and `fs` as
 variables, to make them global. Try/catch blocks and alike contain constants inside of
 themselves, so they can't be used outside of them. This shouldn't really be a problem,
 since we wont change their values anyway. It is what it is, I guess.
@@ -10,6 +8,7 @@ try {
     var { TOKEN, SPECIAL_CHARS, DEBUG } = require("../config.json");
     var Discord = require("discord.js");
     var { GatewayIntentBits } = require("discord.js");
+    var fs = require("fs");
 } catch (err) {
     log_err(err);
     fail();
