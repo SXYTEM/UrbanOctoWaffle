@@ -45,7 +45,7 @@
         "¤"
     ],
     "ONGING": true,
-    "INGING": false,
+    "INGING": true,
     "DEBUG": {
         "LOGGING": {
             "ERRORS": {
