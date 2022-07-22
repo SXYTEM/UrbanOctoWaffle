@@ -1,6 +1,4 @@
-const { Resolver } = require("dns");
 const fs = require("fs");
-const { resolve } = require("path");
 const MSG_FILE = create_log_file("msg_logs", "json");
 const ERR_FILE = create_log_file("err_logs", "txt");
 
