@@ -1,6 +1,4 @@
 const fs = require("fs");
-const MSG_FILE = create_log_file("msg_logs", "json");
-const ERR_FILE = create_log_file("err_logs", "txt");
 
 /*
 Declare `TOKEN`, `SPECIAL_CHARS`, `DEBUG`, `Discord`, and `GatewayIntentBits` as
@@ -107,6 +105,9 @@ function fail() {
 async function on_message(msg) {
     var reply_msg = create_reply(msg);
     if (reply_msg) {
+        if (typeof MSG_FILE === "undefined") {
+            global.MSG_FILE = create_log_file("msg_logs", "json");
+        }
         var reply_sent = await send_reply(msg, reply_msg);
         if (DEBUG["LOGGING"]["MESSAGES"]["CONSOLE"] && reply_sent) {
             log_msg_console(msg, reply_msg);
@@ -246,6 +247,9 @@ function write_json_file(data, file) {
 }
 
 function log_err_file(err) {
+    if (typeof ERR_FILE === "undefined") {
+        global.ERR_FILE = create_log_file("err_logs", "txt");
+    }
     logs = read_json_file(ERR_FILE);
     var newlines_between_errs = 1;
     append_file(err.stack + "\n".repeat(newlines_between_errs + 1), ERR_FILE);
