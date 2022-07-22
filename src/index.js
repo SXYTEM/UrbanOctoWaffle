@@ -144,8 +144,8 @@ async function on_message(msg) {
 function log_msg_console(msg, reply_msg) {
     var { YYYY, MM, DD, hh, mm } = get_current_time();
     var time = `${YYYY}-${MM}-${DD} ${hh}:${mm}`;
-    var reply_phrase = `${time}: Replied to `;
     var seperator = ": ";
+    var reply_phrase = `${time}${seperator}Replied to `;
     // Longest possible Discord username, plus 5 characters for the "#XXXX" that follows
     var username_max_len = 32 + 5;
     // The beggining of the console log, that is everything before the message reply
