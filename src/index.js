@@ -33,7 +33,6 @@ client.on("messageCreate", (msg) => {
         nothing. Else, call `on_message()` and let the onging (and potentially inging)
         begin...
         */
-        console.log("F: " + validate_msg(msg));
         if (validate_msg(msg)) on_message(msg);
     } catch (err) {
         console.log("FATAL ERROR! CONTINUING ANYWAY...");
@@ -53,8 +52,11 @@ function create_log_file(log_dir, extension) {
     var script_parent_dir = __filename.substring(0, __filename.lastIndexOf("\\") + 1);
     var log_folder = script_parent_dir + log_dir;
 
-    const TIME = get_current_time();
-    var log_file = `${log_folder}\\${TIME}_0.${extension}`;
+    // Get current time, and convert it to a string formatted like so: "YYYYMMDDhhmm"
+    var { YYYY, MM, DD, hh, mm } = get_current_time();
+    var time = `${YYYY}${MM}${DD}${hh}${mm}`;
+
+    var log_file = `${log_folder}\\${time}_0.${extension}`;
 
     // If the log folder doesn't exist, create it
     if (!fs.existsSync(log_folder)) {
@@ -77,7 +79,7 @@ function create_log_file(log_dir, extension) {
         */
         var duplicate_number = 1;
         while (true) {
-            var path = `${log_folder}\\${TIME}_${duplicate_number}.${extension}`;
+            var path = `${log_folder}\\${time}_${duplicate_number}.${extension}`;
             if (!fs.existsSync(path)) {
                 fs.open(path, "w", (err) => {
                     if (err) log_err(err);
@@ -88,7 +90,6 @@ function create_log_file(log_dir, extension) {
             duplicate_number += 1;
         }
     }
-
     return log_file;
 }
 
@@ -141,14 +142,17 @@ async function on_message(msg) {
 }
 
 function log_msg_console(msg, reply_msg) {
-    var reply_phrase = "Replied to ";
-    var seperator = "; ";
+    var { YYYY, MM, DD, hh, mm } = get_current_time();
+    var time = `${YYYY}-${MM}-${DD} ${hh}:${mm}`;
+    var reply_phrase = `${time}: Replied to `;
+    var seperator = ": ";
     // Longest possible Discord username, plus 5 characters for the "#XXXX" that follows
     var username_max_len = 32 + 5;
     // The beggining of the console log, that is everything before the message reply
-    var beginning = `${reply_phrase}${msg.author.tag}${seperator}`;
-    var beginning_max_len = reply_phrase.length + username_max_len + seperator.length;
-    var console_msg = beginning.padEnd(beginning_max_len, " ") + `"${reply_msg}"`;
+    var beginning = `${msg.author.tag}${seperator}`;
+    var beginning_max_len = username_max_len + seperator.length;
+    var console_msg =
+        reply_phrase + beginning.padEnd(beginning_max_len, " ") + `"${reply_msg}"`;
 
     console.log(console_msg);
 }
@@ -195,7 +199,6 @@ function create_reply(msg) {
         */
         reply_msg = reply_msg.join(", ");
         reply_msg = reply_msg[0].toUpperCase() + reply_msg.slice(1) + ".";
-
         return reply_msg;
     }
 }
@@ -233,16 +236,13 @@ function log_msg_file(msg, reply_msg, reply_sent) {
 }
 
 function get_current_time() {
-    // Get current time, and convert it to a string formatted like so: "YYYYMMDDhhmm"
     var time = new Date();
-    var YYYY = time.getFullYear();
+    var YYYY = time.getFullYear().toString();
     var MM = (time.getMonth() + 1).toString().padStart(2, "0");
     var DD = time.getDate().toString().padStart(2, "0");
     var hh = time.getHours().toString().padStart(2, "0");
     var mm = time.getMinutes().toString().padStart(2, "0");
-    var TIME = `${YYYY}${MM}${DD}${hh}${mm}`;
-
-    return TIME;
+    return { YYYY, MM, DD, hh, mm };
 }
 
 function read_json_file(file) {
@@ -257,7 +257,6 @@ function read_json_file(file) {
 
         var data = require(file);
     }
-
     return data;
 }
 
