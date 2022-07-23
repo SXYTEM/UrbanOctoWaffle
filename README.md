@@ -1,7 +1,7 @@
 <div align="center">
     <img src="./src/media/logo.png" width="250"/>
     <h1><b>UrbanOctoWaffle</b></h1>
-    <p><b>This is a Discord bot. It replies to messages containg words ending in "ing", with the same words, excpet ending in "ong".</b></p>
+    <p><b>This is a Discord bot. It replies to messages containg words ending in "ing", with the same words, excpet ending in "ong", and vice versa.</b></p>
 </div>
 
 <div align="center">
@@ -35,10 +35,11 @@ Alternatively, you can run [install_packages.bat](install_packages.bat).
    ```shell
    $ node ./src
    ```
-12. Go to the server to which you invited the bot, and send a message containing a word ending in "ing". The bot will reply with the same words, except ending in "ong". *Voilá*!
+Alternatively, you can run [start.bat](start.bat).
+12. Go to the server to which you invited the bot, and send a message containing a word ending in "ing", and vice versa. The bot will reply with the same words, except ending in "ong". *Voilá*!
 
 ## Configuration
-The program can be configured in the [config.json](config.json) file. There exists a default configuration file ([./src/config_default.json](./src/config_default.json)), and you can restore the config file to its defaults by running the following command:
+The program can be configured in the [config.json](config.json) file. There exists a default configuration file ([./src/default_config.json](./src/default_config.json)), and you can restore the config file to its defaults by running the following command:
    ```shell
    $ copy ./src/default_config.json config.json
    ```
