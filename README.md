@@ -37,7 +37,7 @@ Alternatively, you can run [install_packages.bat](install_packages.bat).
    ```
 Alternatively, you can run [start.bat](start.bat).
 
-12. Go to the server to which you invited the bot, and send a message containing a word ending in "ing", and vice versa. The bot will reply with the same words, except ending in "ong". *Voilá*!
+12. Go to the server to which you invited the bot, and send a message containing a word ending in "ing". The bot will reply with the same words, except ending in "ong". If a word ends with "ong" the bot will answer with the same word, but ending with "ing". *Voilá*!
 
 ## Configuration
 The program can be configured in the [config.json](config.json) file. There exists a default configuration file ([./src/default_config.json](./src/default_config.json)), and you can restore the config file to its defaults by running the following command:
