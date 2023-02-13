@@ -36,6 +36,7 @@ Alternatively, you can run [install_packages.bat](install_packages.bat).
    $ node ./src
    ```
 Alternatively, you can run [start.bat](start.bat).
+
 12. Go to the server to which you invited the bot, and send a message containing a word ending in "ing", and vice versa. The bot will reply with the same words, except ending in "ong". *Voilá*!
 
 ## Configuration
