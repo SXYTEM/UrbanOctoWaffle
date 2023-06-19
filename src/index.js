@@ -166,8 +166,15 @@ function log_msg_console(msg, reply_msg) {
     var reply_phrase = `${time}${separator}Replied to `;
     // Longest possible Discord username, plus 5 characters for the "#XXXX" that follows
     var username_max_len = 32 + 5;
+
+    // If the username ends in "#0", remove the "#0" part, since it means the
+    // user has no tag.
+    var username = msg.author.tag;
+    if (username.split("#")[1] == "0") {
+        username = username.split("#")[0];
+    }
     // The beginning of the console log, that is everything before the message reply
-    var beginning = `${msg.author.tag}${separator}`;
+    var beginning = `${username}${separator}`;
     var beginning_max_len = username_max_len + separator.length;
     var console_msg = `${reply_phrase}${beginning.padEnd(
         beginning_max_len,
