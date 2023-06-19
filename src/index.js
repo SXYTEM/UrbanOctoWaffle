@@ -173,6 +173,7 @@ function log_msg_console(msg, reply_msg) {
     if (username.split("#")[1] == "0") {
         username = username.split("#")[0];
     }
+
     // The beginning of the console log, that is everything before the message reply
     var beginning = `${username}${separator}`;
     var beginning_max_len = username_max_len + separator.length;
