@@ -6,6 +6,7 @@ them. This, however, really shouldn't be a problem, since their values won't (or
 shouldn't) be changed. It is what it is, I guess.
 Also, use a try/catch block to log the errors with `log_err()`.
 */
+
 try {
     var { TOKEN, SPECIAL_CHARS, ONGING, INGING, DEBUG } = require("../config.json");
     var Discord = require("discord.js");
@@ -30,10 +31,12 @@ client.on("messageCreate", (msg) => {
     try {
         /*
         If there are no "ing"'s in `msg.content`, or if the message is sent by the bot, do
-        nothing. Else, call `on_message()` and let the onging (and potentially inging)
+        nothing. Else, call `on_message()` and var the onging (and potentially inging)
         begin...
         */
-        if (validate_msg(msg)) on_message(msg);
+        if (validate_msg(msg)) {
+            on_message(msg);
+        }
     } catch (err) {
         console.log("FATAL ERROR! CONTINUING ANYWAY...");
         log_err(err);
@@ -82,7 +85,9 @@ function create_log_file(log_dir, extension) {
             var path = `${log_folder}\\${time}_${duplicate_number}.${extension}`;
             if (!fs.existsSync(path)) {
                 fs.open(path, "w", (err) => {
-                    if (err) log_err(err);
+                    if (err) {
+                        log_err(err);
+                    }
                 });
                 log_file = path;
                 break;
@@ -95,10 +100,15 @@ function create_log_file(log_dir, extension) {
 
 function log_err(err, overwrite = null) {
     if (DEBUG["LOGGING"]["ERRORS"]["CONSOLE"]) {
-        if (overwrite) console.log(overwrite);
-        else if (overwrite != "") console.error(err);
+        if (overwrite) {
+            console.log(overwrite);
+        } else if (overwrite != "") {
+            console.error(err);
+        }
     }
-    if (DEBUG["LOGGING"]["ERRORS"]["FILE"]) log_err_file(err);
+    if (DEBUG["LOGGING"]["ERRORS"]["FILE"]) {
+        log_err_file(err);
+    }
 }
 
 function fail() {
@@ -107,7 +117,9 @@ function fail() {
 
 function validate_msg(msg) {
     // If the message is sent by the bot, ignore it (don't reply to it)
-    if (msg.author.bot) return false;
+    if (msg.author.bot) {
+        return false;
+    }
     /*
     In the configuration, the user can choose if messages should be ingd, ongd, both, or none
     -- the latter making the bot do absolutely nothing. Make `REQUIRED_STRS` contain the
@@ -115,11 +127,17 @@ function validate_msg(msg) {
     configuration; `ONGING`, `INGING`), ignore it.
     */
     var REQUIRED_STRS = [];
-    if (ONGING) REQUIRED_STRS.push("ing");
-    if (INGING) REQUIRED_STRS.push("ong");
+    if (ONGING) {
+        REQUIRED_STRS.push("ing");
+    }
+    if (INGING) {
+        REQUIRED_STRS.push("ong");
+    }
     var result = false;
     REQUIRED_STRS.forEach((str) => {
-        if (msg.content.toLowerCase().includes(str)) result = true;
+        if (msg.content.toLowerCase().includes(str)) {
+            result = true;
+        }
     });
     return result;
 }
@@ -144,13 +162,13 @@ async function on_message(msg) {
 function log_msg_console(msg, reply_msg) {
     var { YYYY, MM, DD, hh, mm } = get_current_time();
     var time = `${YYYY}-${MM}-${DD} ${hh}:${mm}`;
-    var seperator = ": ";
-    var reply_phrase = `${time}${seperator}Replied to `;
+    var separator = ": ";
+    var reply_phrase = `${time}${separator}Replied to `;
     // Longest possible Discord username, plus 5 characters for the "#XXXX" that follows
     var username_max_len = 32 + 5;
-    // The beggining of the console log, that is everything before the message reply
-    var beginning = `${msg.author.tag}${seperator}`;
-    var beginning_max_len = username_max_len + seperator.length;
+    // The beginning of the console log, that is everything before the message reply
+    var beginning = `${msg.author.tag}${separator}`;
+    var beginning_max_len = username_max_len + separator.length;
     var console_msg = `${reply_phrase}${beginning.padEnd(
         beginning_max_len,
         " "
@@ -185,20 +203,25 @@ function create_reply(msg) {
     msg_array.forEach((word) => {
         word_beginning = word.slice(0, -3);
         word_ending = word.slice(-3);
-        if (ONGING && word_ending === "ing") reply_msg.push(word_beginning + "ong");
-        if (INGING && word_ending == "ong") reply_msg.push(word_beginning + "ing");
+        if (ONGING && word_ending === "ing") {
+            reply_msg.push(word_beginning + "ong");
+        }
+        if (INGING && word_ending == "ong") {
+            reply_msg.push(word_beginning + "ing");
+        }
     });
 
     /*
     If the reply is empty, it means that the message isn't a valid "ing"-ending message,
     and therefore no reply should be sent
     */
-    if (reply_msg.length === 0) return false;
-    else {
+    if (reply_msg.length === 0) {
+        return false;
+    } else {
         /*
-        Make the `reply_msg` array a string, the words seperated by ", ". Also make the
-        first letter capital, and add a dot at the end.
-        */
+            Make the `reply_msg` array a string, the words separated by ", ". Also make the
+            first letter capital, and add a dot at the end.
+            */
         reply_msg = reply_msg.join(", ");
         reply_msg = reply_msg[0].toUpperCase() + reply_msg.slice(1) + ".";
         return reply_msg;
@@ -221,8 +244,7 @@ async function send_reply(msg, reply_msg) {
         });
 
     var get_result = async () => {
-        var result = await reply_sent;
-        return result;
+        return await reply_sent;
     };
 
     return await get_result();
@@ -254,7 +276,9 @@ function read_json_file(file) {
         // The "SyntaxError: Unexpected end of JSON input" error gets thrown when the
         // file is empty. If it is, add "{}" to it.
         fs.writeFileSync(file, "{}", (err) => {
-            if (err) log_err(err);
+            if (err) {
+                log_err(err);
+            }
         });
 
         var data = require(file);
@@ -264,7 +288,9 @@ function read_json_file(file) {
 
 function write_json_file(data, file) {
     fs.writeFileSync(file, data.toString(), (err) => {
-        if (err) log_err(err);
+        if (err) {
+            log_err(err);
+        }
     });
 }
 
@@ -279,6 +305,8 @@ function log_err_file(err) {
 
 function append_file(data, file) {
     fs.appendFileSync(file, data.toString(), (err) => {
-        if (err) console.error(err);
+        if (err) {
+            console.error(err);
+        }
     });
 }

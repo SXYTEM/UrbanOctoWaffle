@@ -1,5 +1,5 @@
 {
-    "TOKEN": "",
+    "TOKEN": "OTk0OTE2OTA1MTE2Nzc4NTA3.GmuvKu.0KE5To6HJiM74xJTpEy36Ip_17NlqRdrwyT4eI",
     "SPECIAL_CHARS": [
         "0",
         "1",
@@ -48,14 +48,8 @@
     "INGING": true,
     "DEBUG": {
         "LOGGING": {
-            "ERRORS": {
-                "CONSOLE": true,
-                "FILE": true
-            },
-            "MESSAGES": {
-                "CONSOLE": true,
-                "FILE": true
-            }
+            "ERRORS": { "CONSOLE": true, "FILE": true },
+            "MESSAGES": { "CONSOLE": true, "FILE": true }
         }
     }
 }
